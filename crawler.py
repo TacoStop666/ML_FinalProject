@@ -214,14 +214,21 @@ class IG_Parser:
     def get_comment_count(self, pop_window_ele):
         comment_count = 0
         reply_count = 0
+        max_clicks = 25  # Set maximum number of clicks
+        click_count = 0  # Initialize click counter
         try:
             more_comment = pop_window_ele.ele('.x9f619 xjbqb8w x78zum5 x168nmei x13lgxp2 x5pf9jr xo71vjh xdj266r xat24cr x1n2onr6 x1plvlek xryxfnj x1c4vz4f x2lah0s xdt5ytf xqjyukv x1qjc9v5 x1oa3qoh xl56j7k', timeout=2)
-            while more_comment != None:
+            # Click the button until there are no more comments to load or until the limit is reached
+            while more_comment is not None and click_count < max_clicks:
                 more_comment.click()
+                click_count += 1
                 more_comment = pop_window_ele.ele('.x9f619 xjbqb8w x78zum5 x168nmei x13lgxp2 x5pf9jr xo71vjh xdj266r xat24cr x1n2onr6 x1plvlek xryxfnj x1c4vz4f x2lah0s xdt5ytf xqjyukv x1qjc9v5 x1oa3qoh xl56j7k', timeout=2)
-            
+
+            # Count the main comment elements
             comment_elements = pop_window_ele.eles('.x9f619 xjbqb8w x78zum5 x168nmei x13lgxp2 x5pf9jr xo71vjh x1yztbdb x1uhb9sk x1plvlek xryxfnj x1c4vz4f x2lah0s xdt5ytf xqjyukv x1qjc9v5 x1oa3qoh x1nhvcw1', timeout=2)
             comment_count = len(comment_elements)
+
+            # Count the reply elements
             reply_elements = pop_window_ele.eles('._a9yi')
         
             # Extract the text inside the span and parse the number
