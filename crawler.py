@@ -250,7 +250,7 @@ class IG_Parser:
         return datetime
     
 if __name__ == '__main__':
-    download_num = 3
+    download_num = 10
 
     parser = IG_Parser()
     parser.start_parse(download_num)
