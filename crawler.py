@@ -4,6 +4,7 @@ import time
 import os
 import csv
 import re
+import random
 
 def extract_like_count(like_text):
     # 使用正則表達式提取數字和單位（如「萬」）
@@ -99,6 +100,10 @@ class IG_Parser:
 
         pop_window_ele = page.ele('.x1cy8zhl x9f619 x78zum5 xl56j7k x2lwn1j xeuugli x47corl')
         for i in range(download_num):
+            delay = random.uniform(0, 5)
+            print(f'Sleeping for {delay:.2f} seconds before processing post {i + 1}')
+            time.sleep(delay)
+
             print('=== 第', i + 1, '個 Post ===')
             retry_count = 0
             img_url = ''
@@ -132,6 +137,11 @@ class IG_Parser:
 
                     datetime = self.get_datetime(pop_window_ele)
                     print('datetime:', datetime)
+                    
+                    # add delay
+                    delay_profile = random.uniform(0, 2)
+                    print(f'Sleeping for {delay_profile:.2f} seconds before checking user profile')
+                    time.sleep(delay_profile)
 
                     follower_count = self.navigate_to_user_profile(pop_window_ele, page)
                     print('Follower count for this user:', follower_count)
@@ -220,6 +230,11 @@ class IG_Parser:
             more_comment = pop_window_ele.ele('.x9f619 xjbqb8w x78zum5 x168nmei x13lgxp2 x5pf9jr xo71vjh xdj266r xat24cr x1n2onr6 x1plvlek xryxfnj x1c4vz4f x2lah0s xdt5ytf xqjyukv x1qjc9v5 x1oa3qoh xl56j7k', timeout=2)
             # Click the button until there are no more comments to load or until the limit is reached
             while more_comment is not None and click_count < max_clicks:
+                # add delay
+                delay_comments = random.uniform(0, 2)
+                print(f'Sleeping for {delay_comments:.2f} seconds before loading comments')
+                time.sleep(delay_comments)
+
                 more_comment.click()
                 click_count += 1
                 more_comment = pop_window_ele.ele('.x9f619 xjbqb8w x78zum5 x168nmei x13lgxp2 x5pf9jr xo71vjh xdj266r xat24cr x1n2onr6 x1plvlek xryxfnj x1c4vz4f x2lah0s xdt5ytf xqjyukv x1qjc9v5 x1oa3qoh xl56j7k', timeout=2)
@@ -257,9 +272,26 @@ class IG_Parser:
         return datetime
     
 if __name__ == '__main__':
-    download_num = 10
+    # download_num = 500
 
-    parser = IG_Parser()
-    parser.start_parse(download_num)
+    # parser = IG_Parser()
+    # parser.start_parse(download_num)
 
-    print('下載完成')
+    # print('下載完成')
+    
+    download_num = 500  # 初始設定的下載數量
+    retry_count = 0  # 設定重試計數
+    max_retries = 500  # 最大重試次數，避免無限循環
+
+    while retry_count < max_retries:
+        try:
+            parser = IG_Parser()
+            parser.start_parse(download_num)
+
+            print('下載完成')
+            break
+        except Exception as e:
+            retry_count += 1
+            print(f'error: {e}')
+            print('retry no. {retry_count}')
+            time.sleep(5)  
