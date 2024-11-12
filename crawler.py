@@ -294,4 +294,8 @@ if __name__ == '__main__':
             retry_count += 1
             print(f'error: {e}')
             print('retry no. {retry_count}')
-            time.sleep(5)  
+            
+            # add delay
+            delay_retry = random.uniform(3, 5)
+            print(f'Sleeping for {delay_retry:.2f} seconds before retry')
+            time.sleep(delay_retry)
