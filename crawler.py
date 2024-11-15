@@ -4,14 +4,25 @@ import time
 import os
 import csv
 import re
+import random
 
-def extract_like_count(like_text):
+def extract_like_count(like_text): 
     # 使用正則表達式提取數字和單位（如「萬」）
     match = re.search(r'([\d.]+)(萬)?', like_text)
     
     if match:
         # 提取數字部分
-        number = float(match.group(1))
+        number_str = match.group(1)
+        
+        # 檢查是否僅包含小數點
+        if number_str == ".":
+            return None
+        
+        # 將數字字串轉為浮點數
+        try:
+            number = float(number_str)
+        except:
+            return None
         
         # 如果有「萬」單位，則乘以 10000
         if match.group(2) == "萬":
@@ -22,6 +33,7 @@ def extract_like_count(like_text):
     else:
         # 如果沒有找到數字，返回 None
         return None
+
     
 def extract_possible_description(pic_description):
     # 使用正則表達式匹配 "可能是" 之後的內容
@@ -75,7 +87,7 @@ class IG_Parser:
             username_link = pop_window_ele.ele('.x1i10hfl xjbqb8w x1ejq31n xd10rxx x1sy0etr x17r0tee x972fbf xcfux6l x1qhh985 xm0m39n x9f619 x1ypdohk xt0psk2 xe8uvvx xdj266r x11i5rnm xat24cr x1mh8g0r xexx8yu x4uap5 x18d9i69 xkhd6sd x16tdsg8 x1hl2dhg xggy1nq x1a2a7pz  _acan _acao _acat _acaw _aj1- _ap30 _a6hd')  # Update with the correct selector
             new_tab = page.new_tab(username_link.attr('href'))
             new_tab.get(username_link.attr('href'))
-            time.sleep(2)  # Adjust delay as necessary for page load
+            time.sleep(random.randint(2, 5))  # Adjust delay as necessary for page load
             
             follower_count = self.get_follower_count(new_tab)
             print("Follower count:", follower_count)
@@ -128,7 +140,11 @@ class IG_Parser:
                     print('is_video:', is_video)
 
                     comment_count = self.get_comment_count(pop_window_ele)
-                    print('comment_count:', comment_count)
+                    if comment_count == None:
+                        i = i - 1
+                        break
+                    else:
+                        print('comment_count:', comment_count)
 
                     datetime = self.get_datetime(pop_window_ele)
                     print('datetime:', datetime)
@@ -152,9 +168,19 @@ class IG_Parser:
                 parser.download_text(post_text)
 
             self.post_idx += 1
+            try:
+                next_btm = pop_window_ele.ele('. _aaqg _aaqh')
+                next_btm.click()
+            except:
+                url = 'https://www.instagram.com/explore/'
+                page = ChromiumPage()
+                page.get(url)
 
-            next_btm = pop_window_ele.ele('. _aaqg _aaqh')
-            next_btm.click()
+                # click first photo
+                first_post = page.ele('._aagw')
+                first_post.click()
+
+                pop_window_ele = page.ele('.x1cy8zhl x9f619 x78zum5 xl56j7k x2lwn1j xeuugli x47corl')
 
     #def download_img(self, img_url):
         # 使用requests發送HTTP GET請求獲取圖片數據
@@ -220,7 +246,10 @@ class IG_Parser:
             more_comment = pop_window_ele.ele('.x9f619 xjbqb8w x78zum5 x168nmei x13lgxp2 x5pf9jr xo71vjh xdj266r xat24cr x1n2onr6 x1plvlek xryxfnj x1c4vz4f x2lah0s xdt5ytf xqjyukv x1qjc9v5 x1oa3qoh xl56j7k', timeout=2)
             # Click the button until there are no more comments to load or until the limit is reached
             while more_comment is not None and click_count < max_clicks:
-                more_comment.click()
+                try:
+                    more_comment.click()
+                except:
+                    break
                 click_count += 1
                 more_comment = pop_window_ele.ele('.x9f619 xjbqb8w x78zum5 x168nmei x13lgxp2 x5pf9jr xo71vjh xdj266r xat24cr x1n2onr6 x1plvlek xryxfnj x1c4vz4f x2lah0s xdt5ytf xqjyukv x1qjc9v5 x1oa3qoh xl56j7k', timeout=2)
 
@@ -257,7 +286,7 @@ class IG_Parser:
         return datetime
     
 if __name__ == '__main__':
-    download_num = 10
+    download_num = 1000
 
     parser = IG_Parser()
     parser.start_parse(download_num)
