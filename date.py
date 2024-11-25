@@ -4,7 +4,7 @@ import csv
 # 檔案名稱
 input_file = "output.csv"  # 原始文件名稱
 output_file = "cleaned_output.csv"  # 修復後的文件名稱
-target_date = "2024-11-19"  # 設定目標日期
+target_date = "2024-11-25"  # 設定目標日期
 
 # 清理並修復文件
 def clean_csv(input_file, output_file, expected_fields=9):
