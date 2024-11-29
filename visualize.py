@@ -32,7 +32,7 @@ upper_limit_like_count = Q3_like_count + 1.5 * IQR_like_count
 filtered_data = data[
     (followers >= lower_limit_followers) & (followers <= upper_limit_followers) &
     (like_count >= lower_limit_like_count) & (like_count <= upper_limit_like_count) &
-    (followers < 100000) & (like_count < 10000)
+    (followers < 1000) & (like_count < 2000)
 ]
 
 # Extract the filtered followers and like count columns
@@ -57,7 +57,7 @@ plt.scatter(filtered_followers, filtered_like_count, color='blue', alpha=0.7)
 plt.plot(filtered_followers, predicted_like_count, color='red', linewidth=2, label=f'Best Fit Line (y = {slope:.2f}x + {intercept:.2f})')
 
 # Title and labels
-plt.title('Followers vs Like Count (Outliers Removed, Followers < 200000, Like Count < 50000)')
+plt.title('Followers vs Like Count (Outliers Removed)')
 plt.xlabel('Followers')
 plt.ylabel('Like Count')
 plt.grid(True)
